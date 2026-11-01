@@ -107,7 +107,6 @@ def propagate_batch(model: dict, dom: Domain, shot_pos: np.ndarray, rcv_pos: np.
 
     vp, vs, rho = (torch.tensor(model[k], device=device) for k in ("vp", "vs", "rho"))
     lamb, mu, buoy = vpvsrho_to_lambmubuoyancy(vp, vs, rho)
-    vmax = float(model["vp"].max()) * 1.001     # margin: Deepwave recomputes vp from lambda, mu, rho in float32
     pml_freq = float(np.mean([j["freq"] for j in jobs]))
 
     def loc(idx):
@@ -142,7 +141,7 @@ def propagate_batch(model: dict, dom: Domain, shot_pos: np.ndarray, rcv_pos: np.
         try:
             with torch.no_grad():
                 out = deepwave.elastic(lamb, mu, buoy, dom.dx, dt, pml_width=meta["grid"]["pml_width"],
-                                       pml_freq=pml_freq, accuracy=meta["grid"]["accuracy"], max_vel=vmax, **kw)
+                                       pml_freq=pml_freq, accuracy=meta["grid"]["accuracy"], **kw)   # max_vel: Deepwave derives it
         except torch.cuda.OutOfMemoryError:
             if chunk == 1:
                 raise
