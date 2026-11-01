@@ -7,7 +7,7 @@ dependencies = [
     "numpy",
     "scipy",
     "torch",
-    "deepwave>=0.0.27",
+    "deepwave>=0.0.27,<0.4",
     "scikit-fmm",
     "h5py",
     "matplotlib",
